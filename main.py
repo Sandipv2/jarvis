@@ -2,7 +2,6 @@ import pyttsx3
 import datetime
 import speech_recognition as sr
 import pyaudio
-import wikipedia
 import webbrowser
 import os
 from gemini_api import chat
@@ -66,18 +65,8 @@ if __name__ == '__main__':
     while True:
         q = takeCommand().lower()
 
-        if '1231231233' in q:
-            q = q.replace('who is','')
-            try:
-                speak('Searching wikipedia!')
-                result = wikipedia.summary(q, sentences=2)
-                print(result)
-                speak(result)
-
-            except Exception as e:
-                speak('No information found!') 
-
-        elif 'play music' in q:
+        # ------------ Music commands ------------
+        if 'play music' in q:
             random_song = songs[song_index]
 
             song_to_play = os.path.join(music_dir, random_song)
@@ -98,18 +87,28 @@ if __name__ == '__main__':
             song_to_play = os.path.join(music_dir, songs[song_index])
             os.startfile(song_to_play)
 
+        # ------------ Time commands ------------
         elif 'the time' in q:
             hour = datetime.datetime.now().hour
             minute = datetime.datetime.now().minute
             print(f'Jarvis: Sir, the time is: {hour} point {minute}')
             speak(f'Sir, the time is: {hour} point {minute}')
         
+        # ------------ App opening commands ------------
         elif 'start code' in q:
             os.system('start code')
             
         elif 'stop jarvis' in q:
             speak('Bye, have a good day!')
             exit()
+        
+        # ------------ Sites opening commands ------------ 
+        elif q.startswith('open'):   
+            for name, url in sites:
+                if f'open {name}' in q:
+                    webbrowser.open(url)
+                    speak(f'Opening {name}')
+                    break
             
         else:
             response = chat(q)
@@ -124,12 +123,4 @@ if __name__ == '__main__':
             if isCode:        
                 speak('The code is ready!')
             else:
-                speak(response)
-                
-            
-        
-        for site in sites:
-            if f'open {site[0]}' in q:
-                webbrowser.open(site[1])
-                
-                          
+                speak(response)                          
