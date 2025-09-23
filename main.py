@@ -72,11 +72,10 @@ if __name__ == '__main__':
 
         # ------------ Music commands ------------
         if 'play music' in q:
-            random_song = songs[song_index]
-
-            song_to_play = os.path.join(music_dir, random_song)
-
+            song = songs[song_index]
+            song_to_play = os.path.join(music_dir, song)
             os.startfile(song_to_play)
+            
         elif 'stop music' in q:
             print('music stopped:',song_to_play)
             os.system('taskkill /im vlc.exe /f')
