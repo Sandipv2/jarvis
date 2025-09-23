@@ -1,9 +1,14 @@
-import pyttsx3
+#----------- Core modules ---------
 import datetime
-import speech_recognition as sr
-import pyaudio
 import webbrowser
 import os
+
+#----------- External modules ---------
+import pyttsx3
+import speech_recognition as sr
+import pyaudio
+
+#----------- Local modules ---------
 from gemini_api import chat
 
 engine = pyttsx3.init()
