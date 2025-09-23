@@ -1,134 +1,49 @@
 #----------- Core modules ---------
-import datetime
-import webbrowser
-import os
-
-#----------- External modules ---------
-import pyttsx3
-import speech_recognition as sr
-import pyaudio
+import tkinter as tk
+from tkinter import scrolledtext, messagebox
+import threading
 
 #----------- Local modules ---------
-from gemini_api import chat
+from jarvis_core import greetMe, takeCommand, processCommand
 
-engine = pyttsx3.init()
+#-------- GUI Functions --------
+def append_output_area(text):
+    output_area.config(state='normal')
+    output_area.insert(tk.END, text + '\n')
+    output_area.yview(tk.END)
+    output_area.config(state='disabled')
 
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
-
-def greetMe():
-    hour = int(datetime.datetime.now().hour)
-
-    if hour >= 0 and hour < 12:
-        speak('Good Morning!')
-    elif hour >= 12 and hour < 18:
-        speak('Good AFternoon!')
-    else:
-        speak('Good Evening!')
-    
-    speak("I am Jarvis, how may I help you?")
-    
-
-def takeCommand():
-    recognizer = sr.Recognizer()
-
-    with sr.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        print('Listening...')
-        recognizer.pause_threshold = 1
-        audio = recognizer.listen(source)
-
-    try:
-        query = recognizer.recognize_google(audio, language='en-in')
-        print(f'You said: {query}')
-    except Exception as e:
-        print("Pleasy say again....")
-        return 'None'
-    
-    return query
-
-
-if __name__ == '__main__':
-    greetMe()
-    
-    song_index = 0
-    music_dir = 'S:\\Bhajan'
-    songs = os.listdir(music_dir)
-    
-    sites = [
-        ('youtube', 'https://youtube.com'),
-        ('google', 'https://google.com'),
-        ('github', 'https://github.com'),
-        ('linkedin', 'https://linkedin.com'),
-        ('gmail','https://gmail.com'),
-        ('wikipedia','https://wikipedia.com'),
-        ('chess', 'https://chess.com'),
-        ('gpt','https://chatgpt.com')
-    ]
-    
+def handle_voice_command():
     while True:
-        q = takeCommand().lower()
-
-        # ------------ Music commands ------------
-        if 'play music' in q:
-            random_song = songs[song_index]
-
-            song_to_play = os.path.join(music_dir, random_song)
-
-            os.startfile(song_to_play)
-        elif 'stop music' in q:
-            print('music stopped:',song_to_play)
-            os.system('taskkill /im vlc.exe /f')
-            os.system('taskkill /im Microsoft.Media.Player.exe /f')
-            
-        elif 'next music' in q:
-            song_index = (song_index+1) % len(songs)
-            song_to_play = os.path.join(music_dir, songs[song_index])
-            os.startfile(song_to_play)
-            
-        elif 'previous music' in q:
-            song_index = (song_index-1) % len(songs)
-            song_to_play = os.path.join(music_dir, songs[song_index])
-            os.startfile(song_to_play)
-
-        # ------------ Time commands ------------
-        elif 'the time' in q:
-            hour = datetime.datetime.now().hour
-            minute = datetime.datetime.now().minute
-            print(f'Jarvis: Sir, the time is: {hour} point {minute}')
-            speak(f'Sir, the time is: {hour} point {minute}')
+        query = takeCommand()
+        processCommand(query)
         
-        # ------------ App opening commands ------------
-        elif 'open code' in q:
-            os.system('start code')
-            
-        elif 'stop code' in q:
-            os.system('taskkill /im Code.exe')
-            
-        elif 'stop jarvis' in q:
-            speak('Bye, have a good day!')
-            exit()
-        
-        # ------------ Sites opening commands ------------ 
-        elif q.startswith('open'):   
-            for name, url in sites:
-                if f'open {name}' in q:
-                    webbrowser.open(url)
-                    speak(f'Opening {name}')
-                    break
-            
-        else:
-            response = chat(q)
-            langs = ['java','python','c','c++','javascript']
-            print(f'Jarvis: {response}')
-            
-            isCode = False
-            for lang in langs:
-                if f"```{lang}" in response:
-                    isCode = True
-                    
-            if isCode:        
-                speak('The code is ready!')
-            else:
-                speak(response)                          
+def handle_input_command():
+    input_command = input_entry.get()
+    processCommand(input_command)
+
+root = tk.Tk()
+root.title('Jarvis - AI Assistant')
+root.geometry('570x500')
+root.resizable(False, False)
+
+# Output area
+output_area = scrolledtext.ScrolledText(root, width=75, height=25, state='disabled', font=("Helvetica", 10))
+output_area.pack(pady=10)
+
+# Input frame
+input_frame = tk.Frame(root)
+input_frame.pack(pady=5)
+
+input_entry = tk.Entry(input_frame, width=50, font=("Helvetica", 12))
+input_entry.pack(side=tk.LEFT, padx=5)
+
+send_btn = tk.Button(input_frame, text="Send", command=handle_input_command,width=10, bg="#4CAF50", fg="white")
+send_btn.pack(side=tk.LEFT, padx=5)
+
+voice_btn = tk.Button(root, text="🎤 Speak", command=handle_voice_command,width=15, bg="#2196F3", fg="white")
+voice_btn.pack(pady=5)
+
+threading.Thread(target=greetMe).start()
+
+root.mainloop()
