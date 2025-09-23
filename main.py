@@ -95,8 +95,11 @@ if __name__ == '__main__':
             speak(f'Sir, the time is: {hour} point {minute}')
         
         # ------------ App opening commands ------------
-        elif 'start code' in q:
+        elif 'open code' in q:
             os.system('start code')
+            
+        elif 'stop code' in q:
+            os.system('taskkill /im Code.exe')
             
         elif 'stop jarvis' in q:
             speak('Bye, have a good day!')
