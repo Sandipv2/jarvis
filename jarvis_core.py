@@ -51,14 +51,14 @@ def takeCommand():
 
 def processCommand(query):
     q = query.lower()
-    
+    response = None  # default if nothing matches
+
     song_index = 0
     music_dir = 'S:\\Bhajan'
     songs = os.listdir(music_dir)
     song = songs[song_index]
-
     song_to_play = os.path.join(music_dir, song)
-    
+
     sites = [
         ('youtube', 'https://youtube.com'),
         ('google', 'https://google.com'),
@@ -73,38 +73,44 @@ def processCommand(query):
     # ------------ Music commands ------------
     if 'play music' in q:
         os.startfile(song_to_play)
+        response = f"Playing: {song}"
         
     elif 'stop music' in q:
-        print('music stopped:',song_to_play)
         os.system('taskkill /im vlc.exe /f')
         os.system('taskkill /im Microsoft.Media.Player.exe /f')
+        response = "Music stopped."
         
     elif 'next music' in q:
-        song_index = (song_index+1) % len(songs)
+        song_index = (song_index + 1) % len(songs)
         song_to_play = os.path.join(music_dir, songs[song_index])
         os.startfile(song_to_play)
+        response = f"Playing next: {songs[song_index]}"
         
     elif 'previous music' in q:
-        song_index = (song_index-1) % len(songs)
+        song_index = (song_index - 1) % len(songs)
         song_to_play = os.path.join(music_dir, songs[song_index])
         os.startfile(song_to_play)
+        response = f"Playing previous: {songs[song_index]}"
 
     # ------------ Time commands ------------
     elif 'the time' in q:
         hour = datetime.datetime.now().hour
         minute = datetime.datetime.now().minute
-        print(f'Jarvis: Sir, the time is: {hour} point {minute}')
-        speak(f'Sir, the time is: {hour} point {minute}')
+        response = f"Sir, the time is: {hour} point {minute}"
+        speak(response)
     
     # ------------ App opening commands ------------
     elif 'open code' in q:
         os.system('start code')
+        response = "Opening VS Code."
         
     elif 'stop code' in q:
         os.system('taskkill /im Code.exe')
+        response = "VS Code stopped."
         
     elif 'stop jarvis' in q:
-        speak('Bye, have a good day!')
+        response = "Bye, have a good day!"
+        speak(response)
         exit()
     
     # ------------ Sites opening commands ------------ 
@@ -112,20 +118,18 @@ def processCommand(query):
         for name, url in sites:
             if f'open {name}' in q:
                 webbrowser.open(url)
-                speak(f'Opening {name}')
+                response = f"Opening {name}"
+                speak(response)
                 break
         
     else:
         response = chat(q)
         langs = ['java','python','c','c++','javascript']
-        print(f'Jarvis: {response}')
         
-        isCode = False
-        for lang in langs:
-            if f"```{lang}" in response:
-                isCode = True
-                
+        isCode = any(f"```{lang}" in response for lang in langs)
         if isCode:        
             speak('The code is ready!')
         else:
             speak(response)
+    
+    return response if response else "I didn’t understand that."

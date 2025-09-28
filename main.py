@@ -14,13 +14,22 @@ def append_output_area(text):
     output_area.config(state='disabled')
 
 def handle_voice_command():
-    while True:
+    def run():
         query = takeCommand()
-        processCommand(query)
+        if query:
+            append_output_area(f"You (voice): {query}")
+            response = processCommand(query)
+            append_output_area(f"Jarvis: {response}")
+    append_output_area('Listening...')
+    threading.Thread(target=run).start()
         
 def handle_input_command():
     input_command = input_entry.get()
-    processCommand(input_command)
+    if input_command.strip():
+        append_output_area(f"You: {input_command}")
+        response = processCommand(input_command)
+        append_output_area(f"Jarvis: {response}")
+        input_entry.delete(0, tk.END)
 
 root = tk.Tk()
 root.title('Jarvis - AI Assistant')
