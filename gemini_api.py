@@ -9,7 +9,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
 
-chat_history = "You are Jarvis - The most friendly AI Assistant. Give brief and concise responses, not detailed one. Provide detailed resposes only when asked. And don't put 'Jarvis:' before response."
+chat_history = "You are Jarvis - The most friendly AI Assistant. Give brief and concise responses, not detailed one. Provide detailed resposes only when asked. And don't put 'Jarvis:' before response. Dont response anything until asked, dont even say 'what can in help you'. Dont respond until ask."
 
 
 def chat(prompt):

@@ -53,7 +53,7 @@ if __name__ == '__main__':
     greetMe()
     
     song_index = 0
-    music_dir = 'S:\\Bhajan'
+    music_dir = 'S:\\Musics'
     songs = os.listdir(music_dir)
     
     sites = [
@@ -123,11 +123,13 @@ if __name__ == '__main__':
             print(f'Jarvis: {response}')
             
             isCode = False
-            for lang in langs:
-                if f"```{lang}" in response:
-                    isCode = True
+            if response is not None:
+                for lang in langs:
+                    if f"```{lang}" in response:
+                        isCode = True
                     
             if isCode:        
                 speak('The code is ready!')
             else:
-                speak(response)                          
+                if response is not None:
+                    speak(response)                          
