@@ -54,7 +54,7 @@ def processCommand(query):
     response = None  # default if nothing matches
 
     song_index = 0
-    music_dir = 'S:\\Bhajan'
+    music_dir = 'S:\\Musics'
     songs = os.listdir(music_dir)
     song = songs[song_index]
     song_to_play = os.path.join(music_dir, song)
