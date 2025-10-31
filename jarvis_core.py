@@ -49,11 +49,12 @@ def takeCommand():
     
     return query
 
+song_index = 0
 def processCommand(query):
     q = query.lower()
     response = None  # default if nothing matches
 
-    song_index = 0
+    global song_index
     music_dir = 'S:\\Musics'
     songs = os.listdir(music_dir)
     song = songs[song_index]
